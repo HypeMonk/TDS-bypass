@@ -7,7 +7,7 @@
 
 ## Rewrite validation logic:
 1. Copy this given Console script:
-```
+```javascript
 // ── Step 1: Run immediately — intercept validators ──
 const originalFromEntries = Object.fromEntries;
 Object.fromEntries = function(entries) {
