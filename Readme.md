@@ -27,8 +27,10 @@ Object.fromEntries = function(entries) {
 console.log("✅ Step 1 done: Validators intercepted.");
 
 // ── Step 2: Poll until fields render, then fill ──
-const email = Object.keys(localStorage).find(k => k.startsWith('exam:')).replace('exam:','').trim().toLowerCase();
-console.log("Email:", email);
+const user = JSON.parse(localStorage.getItem('user'));
+const email = user?.email?.trim().toLowerCase();
+
+console.log(email);
 
 function waitAndRun(callback, maxWait = 15000) {
   const start = Date.now();
