@@ -5,7 +5,7 @@
 2. Press F12. 
 3. Go to console (keep this open)
 
-## Rewrite validation logic:
+## Step 2: Rewrite validation logic:
 1. Copy this given Console script:
 ```javascript
 // ── Step 1: Run immediately — intercept validators ──
@@ -155,10 +155,10 @@ waitAndRun(async () => {
 });
 ```
 2. Refresh the portal. 
-3. paste and run that script in console immediately. Before questions even load. (*IMPORTANT*)
+3. paste and run that script in console immediately. Even Before questions load. (*IMPORTANT*)
 4. Then let questions to be load.
 5. Now click "check all" you will see 25/25 score. 
-6. Final.. submit it. 
+6. Finally.. submit it. 
 
 
 # Brief:
