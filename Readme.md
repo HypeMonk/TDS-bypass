@@ -8,6 +8,7 @@
 ## Rewrite validation logic:
 1. Copy this given Console script:
 ```
+// ── Step 1: Run immediately — intercept validators ──
 const originalFromEntries = Object.fromEntries;
 Object.fromEntries = function(entries) {
   const result = originalFromEntries.apply(this, arguments);
@@ -17,27 +18,45 @@ Object.fromEntries = function(entries) {
       if (["q-rename-files-server","q-asciirec-server","q-broken-json-server"].includes(key)) continue;
       if (result[key] && typeof result[key] === 'object') {
         result[key].answer = async function() { return true; };
+        console.log("Bypassed:", key);
       }
     }
   }
   return result;
 };
-console.log("✅ Validators overridden.");
-```
-2. Refresh the portal. and paste and enter this script in console immediately. Before questions even load. (*IMPORTANT*)
-3. To check if this works or not, click "check all" you will 22/25 marks. IF not then again refresh the portal and run this script as soon as you can.
+console.log("✅ Step 1 done: Validators intercepted.");
 
-## Step 3: Auto solver for Server validated question:
-1. After sucessfully running that, let the portal load all questions. (DON't refresh portal)
-2. Now run this following script in console:
-```
-// Run this AFTER page finishes loading
-(async () => {
-  const email = Object.keys(localStorage).find(k => k.startsWith('exam:')).replace('exam:','').trim().toLowerCase();
+// ── Step 2: Poll until fields render, then fill ──
+const email = Object.keys(localStorage).find(k => k.startsWith('exam:')).replace('exam:','').trim().toLowerCase();
+console.log("Email:", email);
+
+function waitAndRun(callback, maxWait = 15000) {
+  const start = Date.now();
+  const interval = setInterval(() => {
+    const fields = [
+      document.getElementById('q-rename-files-server'),
+      document.getElementById('q-asciirec-server'),
+      document.getElementById('q-broken-json-server')
+    ];
+    if (fields.every(f => f !== null)) {
+      clearInterval(interval);
+      console.log("✅ All fields found, filling now...");
+      callback();
+    } else if (Date.now() - start > maxWait) {
+      clearInterval(interval);
+      console.log("❌ Timeout — fields not found:",
+        ['q-rename-files-server','q-asciirec-server','q-broken-json-server']
+        .filter(id => !document.getElementById(id)));
+    }
+  }, 500);
+}
+
+waitAndRun(async () => {
   const script = document.createElement('script');
   script.type = 'module';
   script.textContent = `
     import seedrandom from "https://cdn.jsdelivr.net/npm/seedrandom/+esm";
+
     function fill(id, value) {
       const ta = document.getElementById(id);
       if (!ta) { console.log("Field not found:", id); return; }
@@ -45,6 +64,8 @@ console.log("✅ Validators overridden.");
       ta.value = value; ta.dispatchEvent(new Event('input'));
       console.log("Filled:", id);
     }
+
+    // Q5: Reorganize Files
     (async () => {
       const n = new seedrandom("${email}#q-rename-files-server");
       const cats = ["documentation","reports","notes","configs","data","logs","scripts","templates","resources","archives"];
@@ -73,6 +94,8 @@ console.log("✅ Validators overridden.");
       fill("q-rename-files-server", hash);
       console.log("Q5 done:", hash);
     })();
+
+    // Q6: Asciinema
     (() => {
       const r = new seedrandom("${email}#q-asciirec-server");
       const ht = [
@@ -92,6 +115,8 @@ console.log("✅ Validators overridden.");
       fill("q-asciirec-server", cast);
       console.log("Q6 done:", marker);
     })();
+
+    // Q13: Fix Broken JSON
     (() => {
       const r = new seedrandom("${email}#q-broken-json-server");
       const Ft = [
@@ -121,17 +146,21 @@ console.log("✅ Validators overridden.");
       fill("q-broken-json-server", JSON.stringify(h, null, 2));
       console.log("Q13 done:", scenario.name);
     })();
-    console.log("✅ All 3 server questions filled! Click Submit.");
+
+    console.log("✅ All done! Click Submit.");
   `;
   document.head.appendChild(script);
-})();
+});
 ```
-3. Now click "check all" you will see 25/25 score. 
-4. Final.. submit it. 
+2. Refresh the portal. 
+3. paste and run that script in console immediately. Before questions even load. (*IMPORTANT*)
+4. Then let questions to be load.
+5. Now click "check all" you will see 25/25 score. 
+6. Final.. submit it. 
+
 
 # Brief:
 1. Ready your console
-2. Refresh and run Script 1, before even questions load.
-3. Run script 2, after questions load.
-4. Check all and submit. 25/25 is all yours.
+2. Refresh the portal and run Script as soon as you can, before even questions load.
+3. Check all and submit. 25/25 is all yours.
 
